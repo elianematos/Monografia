@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {Meteor} from 'meteor/meteor'
-import Task from './Task.js';
+import Graph from './Graph.js';
 import { withTracker } from 'meteor/react-meteor-data';
 import Plot from 'react-plotly.js';
 import { Tasks } from '../api/tasks.js';
@@ -24,6 +24,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
+import Button from '@material-ui/core/Button';
 
 // App component - represents the whole app
 class App extends Component {
@@ -51,6 +52,7 @@ class App extends Component {
             nLayers:'',
             x:[],
             y:[],
+            alpha:null,
         }
     }
     handleChangeUnit = event => {
@@ -116,6 +118,23 @@ class App extends Component {
         })
         console.log(this.state.nLayers)
     };
+
+    clearParam = () =>{
+        this.setState({
+            unit:'',
+            lr:'',
+            dropout:'',
+            act:'',
+            init:'',
+            opt:'',
+            reg:'',
+            lrReg:'',
+            nLayers:'',
+
+        })
+        console.log(this.state.openUnit, 'hells')
+    }
+
     setQuery() {
         const unit = this.state.unit;
         const lr = this.state.lr;
@@ -139,45 +158,33 @@ class App extends Component {
         console.log(out, 'out')
         const x_axis = []
         const y_axis = []
-        const a = 94
-        const b = []
-        b.push(100-a)
-        console.log(b,'b')
+
 
         out.sort((a,b) => (a.tentativa > b.tentativa) ? 1 : ((b.tentativa > a.tentativa) ? -1 : 0))
             .map(value => {
+                console.log(this.state.unit, 'un')
             x_axis.push(value.tentativa);
             y_axis.push(100-value.loss)
         });
 
-        console.log(out,'ot')
-       if(x_axis !== [] && y_axis !== []) {
-           return (<Plot
-               data={[
-                   {
-                       x: x_axis,
-                       y: y_axis,
-                       type: 'scatter',
-                       mode: 'lines+points',
-                       marker: {color: 'red'},
-                   },
-               ]}
-               layout={{width: 700, height: 700, title: 'DMLP 4uni data5'}}
-           />);
-       }
+       return(
+           <Graph
+               x_axis={x_axis}
+               y_axis={y_axis}
+           />
+       );
+
     };
-
-
 
     render() {
         console.log(this.props.collection, 'hrl')
         return (
             <div>
-                <h1>MLP</h1>
+                <h1>DMLP</h1>
 
-                <Card>
-                    <FormControl>
-                        <InputLabel >units1</InputLabel>
+                <Card style={{display:'flex', justifyContent:'flex-start', height: '100px', }}>
+                    <FormControl style={{padding: '15px'}}>
+                        <InputLabel ># neuronios</InputLabel>
                         <Select
                             value={this.state.unit}
                             onChange={this.handleChangeUnit}
@@ -192,8 +199,9 @@ class App extends Component {
                         </Select>
                         <FormHelperText>Some important helper text</FormHelperText>
                     </FormControl>
-                    <FormControl>
-                        <InputLabel >lr</InputLabel>
+                    <FormControl style={{padding: '15px'}}>
+                        {/*learning rate*/ }
+                        <InputLabel >Taxa de aprendizado </InputLabel>
                         <Select
                             value={this.state.lr}
                             onChange={this.handleChangeLr}
@@ -208,8 +216,8 @@ class App extends Component {
                         </Select>
                         <FormHelperText>Some important helper text</FormHelperText>
                     </FormControl>
-                    <FormControl>
-                        <InputLabel >Drop out</InputLabel>
+                    <FormControl style={{padding: '15px'}}>
+                        <InputLabel >Dropout</InputLabel>
                         <Select
                             value={this.state.dropout}
                             onChange={this.handleChangeDropout}
@@ -226,8 +234,9 @@ class App extends Component {
                         </Select>
                         <FormHelperText>Some important helper text</FormHelperText>
                     </FormControl>
-                    <FormControl>
-                        <InputLabel >Act</InputLabel>
+                    <FormControl style={{padding: '15px'}}>
+                        {/*funçao de ativação: somatorio mais o bias*/}
+                        <InputLabel >Ativação</InputLabel>
                         <Select
                             value={this.state.act}
                             onChange={this.handleChangeAct}
@@ -241,8 +250,9 @@ class App extends Component {
                         </Select>
                         <FormHelperText>Some important helper text</FormHelperText>
                     </FormControl>
-                    <FormControl>
-                        <InputLabel >init</InputLabel>
+                    <FormControl style={{padding: '15px'}}>
+                            {/*inicialização dos pesos da rede*/}
+                        <InputLabel >Inicialização</InputLabel>
                         <Select
                             value={this.state.init}
                             onChange={this.handleChangeInit}
@@ -256,8 +266,9 @@ class App extends Component {
                         </Select>
                         <FormHelperText>Some important helper text</FormHelperText>
                     </FormControl>
-                    <FormControl>
-                        <InputLabel >opt</InputLabel>
+                    <FormControl style={{padding: '15px'}}>
+                                {/*optimization function*/}
+                        <InputLabel >Função de otimização</InputLabel>
                         <Select
                             value={this.state.opt}
                             onChange={this.handleChangeOpt}
@@ -273,8 +284,9 @@ class App extends Component {
                         </Select>
                         <FormHelperText>Some important helper text</FormHelperText>
                     </FormControl>
-                    <FormControl>
-                        <InputLabel >reg</InputLabel>
+                    <FormControl style={{padding: '15px'}}>{/*normalização da entrada*/}
+
+                        <InputLabel >Regularização</InputLabel>
                         <Select
                             value={this.state.reg}
                             onChange={this.handleChangeReg}
@@ -289,8 +301,8 @@ class App extends Component {
                         </Select>
                         <FormHelperText>Some important helper text</FormHelperText>
                     </FormControl>
-                    <FormControl>
-                        <InputLabel >lr_reg</InputLabel>
+                    <FormControl style={{padding: '15px'}}>
+                        <InputLabel style={{paddingRight: '20px'}}>Taxa de aprendizado da regularização</InputLabel>
                         <Select
                             value={this.state.lrReg}
                             onChange={this.handleChangeLrReg}
@@ -306,8 +318,8 @@ class App extends Component {
                         </Select>
                         <FormHelperText>Some important helper text</FormHelperText>
                     </FormControl>
-                    <FormControl>
-                        <InputLabel >n_layers</InputLabel>
+                    <FormControl style={{padding: '15px'}}>
+                        <InputLabel >Número de camadas</InputLabel>
                         <Select
                             value={this.state.nLayers}
                             onChange={this.handleChangeNLayers}
@@ -322,10 +334,16 @@ class App extends Component {
                         </Select>
                         <FormHelperText>Some important helper text</FormHelperText>
                     </FormControl>
+
+                    <Button onClick={this.clearParam}>
+                        Clear parameters
+                    </Button>
                 </Card>
 
                 <Card>
                     {this.setQuery()}
+                    <Button onClick={this.saveQuery}
+                    >Salvar</Button>
                 </Card>
             </div>
         );
